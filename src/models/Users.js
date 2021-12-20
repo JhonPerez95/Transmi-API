@@ -1,4 +1,5 @@
 import { Sequelize, DataTypes } from 'sequelize'
+import bcrypt from 'bcrypt'
 import Db from '../config/db'
 
 const Users = Db.define(
@@ -59,15 +60,29 @@ const Users = Db.define(
     },
     updated_at: {
       type: 'TIMESTAMP',
-      defaultValue: Sequelize.literal(
-        'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
-      ),
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       allowNull: false,
     },
   },
   {
     timestamps: false,
+    hooks: {
+      beforeCreate: async (user) => {
+        if (user.password) {
+          const salt = await bcrypt.genSaltSync(10, 'a')
+          user.password = bcrypt.hashSync(user.password, salt)
+        }
+      },
+      beforeUpdate: async (user) => {
+        if (user.password) {
+          const salt = await bcrypt.genSaltSync(10, 'a')
+          user.password = bcrypt.hashSync(user.password, salt)
+        }
+      },
+    },
   }
 )
-
+Users.prototype.validPassword = async function (password) {
+  return await bcrypt.compare(password, this.password)
+}
 export default Users

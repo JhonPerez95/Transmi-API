@@ -16,7 +16,7 @@ app.use(morgan('dev'))
 app.use('/api', routesApp)
 
 // db
-// require('./db')
+ require('./db')
 
 app.use((req, res, next) => {
   res.status(404).render('404')
