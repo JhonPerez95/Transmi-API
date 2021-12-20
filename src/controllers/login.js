@@ -60,7 +60,7 @@ export const saveUser = async (req, res) => {
     const token = jwt.sign({ id: savedUser._id }, process.env.SECRET_KEY, {
       expiresIn: 86400, // 24 hours
     })
-    res.json({ success: true, message: 'Saved User', user: userSaved, token })
+    res.json({ success: true, message: 'Saved User', user: savedUser, token })
   } catch (error) {
     console.log(error.message)
     res.status(500).json({ success: false, message: error.message })
