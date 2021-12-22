@@ -1,10 +1,9 @@
 import { Router } from 'express'
-import { postLogin, findAllUser, saveUser } from '../controllers/login'
+import { postLogin, restorePassword, saveUser } from '../controllers/login'
 
 const router = Router()
 
-router.get('/login', findAllUser)
-
+router.get('/login/restorePasswordCode', restorePassword)
 router.post('/login', postLogin)
 router.post('/user', saveUser)
 

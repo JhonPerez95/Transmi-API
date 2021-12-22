@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken'
+import { sendMail } from '../helpers/restorePass'
+import RestorePass from '../models/RestorePass'
 import Users from '../models/Users'
 require('dotenv').config()
 
@@ -40,11 +42,33 @@ export const postLogin = async (req, res) => {
 }
 
 // GET /api/login
-export const findAllUser = async (req, res) => {
+export const restorePassword = async (req, res) => {
+  const { email } = req.body
+  const code = Math.floor(100000 + Math.random() * 900000)
+  console.log('Code send: ' + code + ', email: ' + email)
+
+  // const resMail = await sendMail({
+  //   code,
+  //   message: 'Mensaje de prueba',
+  //   email,
+  //   subject: 'Codigo de recuperacion',
+  // })
+
+  // console.log('Respuesta Send Mail: ' + resMail)
+
   try {
-    const userData = await Users.findAll()
-    console.log(userData)
-    res.status(200).json({ success: true, message: 'List user', userData })
+    const restorePass = new RestorePass({
+      code,
+      email,
+    })
+    const savedRestore = await restorePass.save()
+    // const userData = await Users.findAll()
+    // console.log(userData)
+    res.status(200).json({
+      success: true,
+      message: 'Correo de verificacion enviado',
+      savedRestore,
+    })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }

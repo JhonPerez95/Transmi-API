@@ -24,7 +24,7 @@ const Users = Db.define(
       unique: true,
     },
     phone: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
     document: {
@@ -53,19 +53,8 @@ const Users = Db.define(
     remember_token: {
       type: DataTypes.STRING,
     },
-    created_at: {
-      type: 'TIMESTAMP',
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      allowNull: false,
-    },
-    updated_at: {
-      type: 'TIMESTAMP',
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      allowNull: false,
-    },
   },
   {
-    timestamps: false,
     hooks: {
       beforeCreate: async (user) => {
         if (user.password) {
@@ -73,7 +62,7 @@ const Users = Db.define(
           user.password = bcrypt.hashSync(user.password, salt)
         }
       },
-      beforeUpdate: async (user) => {
+      afterCreate: async (user) => {
         if (user.password) {
           const salt = await bcrypt.genSaltSync(10, 'a')
           user.password = bcrypt.hashSync(user.password, salt)
@@ -85,4 +74,8 @@ const Users = Db.define(
 Users.prototype.validPassword = async function (password) {
   return await bcrypt.compare(password, this.password)
 }
+Users.sync()
+  .then(() => console.log('CREATE TABLE ! '))
+  .catch((err) => console.log(err))
+
 export default Users
