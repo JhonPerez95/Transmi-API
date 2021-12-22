@@ -24,6 +24,7 @@ export const postLogin = async (req, res) => {
 
     //TODO: Revisar que datos enviar del usuario , por el momento solo se elimina la pass
     delete userData.dataValues.password
+    delete userData.dataValues.email_verified_at
 
     // Create a token
     const token = jwt.sign({ id: userData.id }, process.env.SECRET_KEY, {
