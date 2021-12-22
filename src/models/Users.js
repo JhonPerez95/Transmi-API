@@ -62,7 +62,7 @@ const Users = Db.define(
           user.password = bcrypt.hashSync(user.password, salt)
         }
       },
-      afterCreate: async (user) => {
+      beforeUpdate: async (user) => {
         if (user.password) {
           const salt = await bcrypt.genSaltSync(10, 'a')
           user.password = bcrypt.hashSync(user.password, salt)
@@ -75,7 +75,7 @@ Users.prototype.validPassword = async function (password) {
   return await bcrypt.compare(password, this.password)
 }
 Users.sync()
-  .then(() => console.log('CREATE TABLE ! '))
+  .then(() => console.log('Sync Successfull !'))
   .catch((err) => console.log(err))
 
 export default Users

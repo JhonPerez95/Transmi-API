@@ -24,7 +24,7 @@ const RestorePass = Db.define('restore_pwd', {
 })
 
 RestorePass.sync()
-  .then(() => console.log('CREATE TABLE ! '))
+  .then(() => console.log('Sync Successfull !'))
   .catch((err) => console.log(err))
 
 export default RestorePass

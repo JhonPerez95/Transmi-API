@@ -45,6 +45,6 @@ export const sendMail = async ({ code, message , email , subject}) => {
 }
 
 
-export const validateCode = (code) => {
-  
+export const validateCode = (codeDb , codeReq) => {
+
 }

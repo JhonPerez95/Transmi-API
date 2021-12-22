@@ -36,25 +36,24 @@ export const postLogin = async (req, res) => {
       user: userData,
     })
   } catch (error) {
-    console.log(error)
-    return res.status(500).json({ success: false, message: error.message })
+    console.log(error.message)
+    res
+      .status(500)
+      .json({ success: false, message: 'Por favor comunicarse con el Admin !' })
   }
 }
 
-// GET /api/login
+// GET /api/login/restorePasswordCode
 export const restorePassword = async (req, res) => {
   const { email } = req.body
   const code = Math.floor(100000 + Math.random() * 900000)
-  console.log('Code send: ' + code + ', email: ' + email)
 
-  // const resMail = await sendMail({
-  //   code,
-  //   message: 'Mensaje de prueba',
-  //   email,
-  //   subject: 'Codigo de recuperacion',
-  // })
-
-  // console.log('Respuesta Send Mail: ' + resMail)
+  const resMail = await sendMail({
+    code,
+    message: 'Su codigo de recuperacion es: ',
+    email,
+    subject: 'Codigo de recuperacion',
+  })
 
   try {
     const restorePass = new RestorePass({
@@ -66,11 +65,13 @@ export const restorePassword = async (req, res) => {
     // console.log(userData)
     res.status(200).json({
       success: true,
-      message: 'Correo de verificacion enviado',
-      savedRestore,
+      message: 'Your verification email has been sent !',
     })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    console.log(error.message)
+    res
+      .status(500)
+      .json({ success: false, message: 'Por favor comunicarse con el Admin !' })
   }
 }
 
@@ -87,6 +88,53 @@ export const saveUser = async (req, res) => {
     res.json({ success: true, message: 'Saved User', user: savedUser, token })
   } catch (error) {
     console.log(error.message)
-    res.status(500).json({ success: false, message: error.message })
+    res
+      .status(500)
+      .json({ success: false, message: 'Por favor comunicarse con el Admin !' })
+  }
+}
+
+// PUT /api/login/restorePasswordCode
+export const updatedPassword = async (req, res) => {
+  const { email, password, code } = req.body
+
+  try {
+    const resultCode = await RestorePass.findOne({
+      where: { email, active: 'A' },
+      order: [['updatedAt', 'DESC']],
+    })
+
+    if (!resultCode)
+      return res
+        .status(200)
+        .json({ success: false, message: 'Email or Code  not found !' })
+
+    // Se cambia el estado del codigo
+    if (
+      code === resultCode.dataValues.code &&
+      email === resultCode.dataValues.email
+    ) {
+      resultCode.update({ active: 'C' })
+      console.log('Updated code successfull! ')
+      const userData = await Users.findOne({ where: { email } })
+      const updatedUser = await userData.update({ password })
+      if (!updatedUser)
+        return res.status(200).json({
+          success: false,
+          message: 'The password could not be updated !',
+        })
+    } else {
+      return res
+        .status(200)
+        .json({ success: false, message: 'The code not match !' })
+    }
+    res
+      .status(200)
+      .json({ success: true, message: 'The password updated successfully ! ' })
+  } catch (error) {
+    console.log(error.message)
+    res
+      .status(500)
+      .json({ success: false, message: 'Please contact the Admin! !' })
   }
 }
