@@ -6,10 +6,6 @@ import dayjs from 'dayjs'
 
 const app = express()
 
-const dateCreated = dayjs().add(1 , 'day').format('YYYY-MM-DD HH:mm:ss')
-
-console.log(dateCreated )
-
 // middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))

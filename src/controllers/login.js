@@ -29,17 +29,14 @@ export const postLogin = async (req, res) => {
     const { id, name, last_name, email, phone, document, active, parkings_id } =
       userData.dataValues
     // Create a token
-    const token = jwt.sign({ id: userData.id }, config.token.secretKey, {
-      expiresIn: 86400, // 24 hours
-    })
-    const expireDate = dayjs().add(1 , 'day').format('YYYY-MM-DD HH:mm:ss')
+    const { token, expireDate } = createToken(userData.id)
 
     return res.status(200).json({
       success: true,
       message: 'user logged in successfully !',
       accessToken: {
         token,
-        expireDate
+        expireDate,
       },
       user: {
         id,
@@ -65,19 +62,18 @@ export const restorePassword = async (req, res) => {
   const { email } = req.body
   const code = Math.floor(100000 + Math.random() * 900000)
 
-  const resMail = await sendMail({
-    code,
-    message: 'Su codigo de recuperacion es: ',
-    email,
-    subject: 'Codigo de recuperacion',
-  })
-
   try {
+    await sendMail({
+      code,
+      message: 'Su codigo de recuperacion es: ',
+      email,
+      subject: 'Codigo de recuperacion',
+    })
     const restorePass = new RestorePass({
       code,
       email,
     })
-    const savedRestore = await restorePass.save()
+    await restorePass.save()
     // const userData = await Users.findAll()
     // console.log(userData)
     res.status(200).json({
@@ -88,7 +84,11 @@ export const restorePassword = async (req, res) => {
     console.log(error.message)
     res
       .status(500)
-      .json({ success: false, message: 'Please contact the Admin! !' })
+      .json({
+        success: false,
+        message: 'Please contact the Admin! !',
+        error: error.message,
+      })
   }
 }
 
@@ -97,17 +97,37 @@ export const saveUser = async (req, res) => {
   try {
     const userData = new Users(req.body)
     const savedUser = await userData.save()
-    delete savedUser.dataValues.password
 
-    const token = jwt.sign({ id: savedUser._id }, config.token.secretKey, {
-      expiresIn: 86400, // 24 hours
+    const { id, name, last_name, email, phone, document, active, parkings_id } =
+      savedUser.dataValues
+
+    const { token, expireDate } = createToken(userData.id)
+
+    res.json({
+      success: true,
+      message: 'Saved User',
+      accessToken: {
+        token,
+        expireDate,
+      },
+      user: {
+        id,
+        name,
+        last_name,
+        email,
+        phone,
+        document,
+        active,
+        parkings_id,
+      },
     })
-    res.json({ success: true, message: 'Saved User', user: savedUser, token })
   } catch (error) {
     console.log(error.message)
-    res
-      .status(500)
-      .json({ success: false, message: 'Please contact the Admin! !' })
+    res.status(500).json({
+      success: false,
+      message: 'Please contact the Admin! !',
+      error: error.message,
+    })
   }
 }
 
@@ -136,13 +156,13 @@ export const updatedPassword = async (req, res) => {
       const userData = await Users.findOne({ where: { email } })
       const updatedUser = await userData.update({ password })
       if (!updatedUser)
-        return res.status(200).json({
+        return res.status(404).json({
           success: false,
           message: 'The password could not be updated !',
         })
     } else {
       return res
-        .status(200)
+        .status(403)
         .json({ success: false, message: 'The code not match !' })
     }
     res
@@ -150,8 +170,22 @@ export const updatedPassword = async (req, res) => {
       .json({ success: true, message: 'The password updated successfully ! ' })
   } catch (error) {
     console.log(error.message)
-    res
-      .status(500)
-      .json({ success: false, message: 'Please contact the Admin! !' })
+    res.status(500).json({
+      success: false,
+      message: 'Please contact the Admin! !',
+      error: error.message,
+    })
+  }
+}
+
+function createToken(id) {
+  const token = jwt.sign({ id }, config.token.secretKey, {
+    expiresIn: 86400, // 24 hours
+  })
+  const expireDate = dayjs().add(1, 'day').format('YYYY-MM-DD HH:mm:ss')
+
+  return {
+    token,
+    expireDate,
   }
 }
