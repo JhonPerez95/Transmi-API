@@ -1,24 +1,24 @@
 import nodemailer from 'nodemailer'
-
+import config from '../config/config'
 /**
  * Envio de correo de recuperacion
- * @param {*} param0 
- * @returns  Boolean 
+ * @param {*} param0
+ * @returns  Boolean
  */
-export const sendMail = async ({ code, message , email , subject}) => {
+export const sendMail = async ({ code, message, email, subject }) => {
   let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
     auth: {
-      user: process.env.EMAIL_SUPPORT,
-      pass: process.env.PASS_EMAIL_SUPPORT, // generated ethereal password
+      user: config.emailSupport.email,
+      pass: config.emailSupport.pass, // generated ethereal password
     },
   })
 
   try {
     await transporter.sendMail({
-      from: process.env.EMAIl_SUPPORT,
+      from: config.emailSupport.email,
       to: email, // list of receivers
       subject: subject, // Subject line
       html: `
@@ -44,7 +44,4 @@ export const sendMail = async ({ code, message , email , subject}) => {
   }
 }
 
-
-export const validateCode = (codeDb , codeReq) => {
-
-}
+export const validateCode = (codeDb, codeReq) => {}

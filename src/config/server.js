@@ -2,16 +2,19 @@ import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
 import routesApp from '../routes'
-require('dotenv').config()
+import dayjs from 'dayjs'
 
 const app = express()
+
+const dateCreated = dayjs().add(1 , 'day').format('YYYY-MM-DD HH:mm:ss')
+
+console.log(dateCreated )
 
 // middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors())
 app.use(morgan('dev'))
-
 // routes
 app.use('/api', routesApp)
 

@@ -1,46 +1,62 @@
+import dayjs from 'dayjs'
 import jwt from 'jsonwebtoken'
+
 import { sendMail } from '../helpers/restorePass'
 import RestorePass from '../models/RestorePass'
 import Users from '../models/Users'
+import config from '../config/config'
+
 require('dotenv').config()
 
 // POST /api/login
 export const postLogin = async (req, res) => {
-  const { email, password } = req.body
+  const { email: emailUser, password } = req.body
 
   try {
-    const userData = await Users.findOne({ where: { email } })
+    const userData = await Users.findOne({ where: { email: emailUser } })
     if (!userData)
       return res
-        .status(200)
+        .status(403)
         .json({ success: false, message: 'User not found !' })
 
     const resultPass = await userData.validPassword(password)
 
     if (!resultPass)
       return res
-        .status(200)
+        .status(404)
         .json({ success: false, message: 'Password incorrect !' })
 
-    //TODO: Revisar que datos enviar del usuario , por el momento solo se elimina la pass
-    delete userData.dataValues.password
-    delete userData.dataValues.email_verified_at
-
+    const { id, name, last_name, email, phone, document, active, parkings_id } =
+      userData.dataValues
     // Create a token
-    const token = jwt.sign({ id: userData.id }, process.env.SECRET_KEY, {
+    const token = jwt.sign({ id: userData.id }, config.token.secretKey, {
       expiresIn: 86400, // 24 hours
     })
+    const expireDate = dayjs().add(1 , 'day').format('YYYY-MM-DD HH:mm:ss')
+
     return res.status(200).json({
       success: true,
       message: 'user logged in successfully !',
-      token,
-      user: userData,
+      accessToken: {
+        token,
+        expireDate
+      },
+      user: {
+        id,
+        name,
+        last_name,
+        email,
+        phone,
+        document,
+        active,
+        parkings_id,
+      },
     })
   } catch (error) {
     console.log(error.message)
     res
       .status(500)
-      .json({ success: false, message: 'Por favor comunicarse con el Admin !' })
+      .json({ success: false, message: 'Please contact the Admin! !' })
   }
 }
 
@@ -72,7 +88,7 @@ export const restorePassword = async (req, res) => {
     console.log(error.message)
     res
       .status(500)
-      .json({ success: false, message: 'Por favor comunicarse con el Admin !' })
+      .json({ success: false, message: 'Please contact the Admin! !' })
   }
 }
 
@@ -83,7 +99,7 @@ export const saveUser = async (req, res) => {
     const savedUser = await userData.save()
     delete savedUser.dataValues.password
 
-    const token = jwt.sign({ id: savedUser._id }, process.env.SECRET_KEY, {
+    const token = jwt.sign({ id: savedUser._id }, config.token.secretKey, {
       expiresIn: 86400, // 24 hours
     })
     res.json({ success: true, message: 'Saved User', user: savedUser, token })
@@ -91,7 +107,7 @@ export const saveUser = async (req, res) => {
     console.log(error.message)
     res
       .status(500)
-      .json({ success: false, message: 'Por favor comunicarse con el Admin !' })
+      .json({ success: false, message: 'Please contact the Admin! !' })
   }
 }
 

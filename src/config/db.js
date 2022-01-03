@@ -1,12 +1,14 @@
 import { Sequelize } from 'sequelize'
-require('dotenv').config()
+import config from './config'
+
+const { db: configDb } = config
 
 const db = new Sequelize(
-  process.env.BD_DATABASE,
-  process.env.BD_USER,
-  process.env.BD_PASS,
+  configDb.database,
+  configDb.user,
+  configDb.pass,
   {
-    host: process.env.BD_HOST,
+    host: configDb.host,
     dialect: 'mysql',
   }
 )
