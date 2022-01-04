@@ -1,8 +1,11 @@
 import express from 'express'
 
-import routeLogin from './login'
+import routesApp from './app'
+import routesWeb from './web'
 
 const app = express()
 
-app.use(routeLogin)
-module.exports = app
+app.use('/app', routesApp)
+app.use('/web', routesWeb)
+
+export default app

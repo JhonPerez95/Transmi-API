@@ -11,8 +11,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors())
 app.use(morgan('dev'))
+
 // routes
-app.use('/api', routesApp)
+app.use(routesApp)
 
 // db
 require('./db')

@@ -1,12 +1,10 @@
 import dayjs from 'dayjs'
 import jwt from 'jsonwebtoken'
 
-import { sendMail } from '../helpers/restorePass'
-import RestorePass from '../models/RestorePass'
-import Users from '../models/Users'
-import config from '../config/config'
-
-require('dotenv').config()
+import { sendMail } from '../../helpers/restorePass'
+import RestorePass from '../../models/RestorePass'
+import Users from '../../models/web/Users'
+import config from '../../config/config'
 
 // POST /api/login
 export const postLogin = async (req, res) => {
@@ -82,13 +80,11 @@ export const restorePassword = async (req, res) => {
     })
   } catch (error) {
     console.log(error.message)
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: 'Please contact the Admin! !',
-        error: error.message,
-      })
+    res.status(500).json({
+      success: false,
+      message: 'Please contact the Admin! !',
+      error: error.message,
+    })
   }
 }
 
