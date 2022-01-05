@@ -8,9 +8,10 @@ import {
 
 const router = Router()
 
-router.get('/login/restorePasswordCode', restorePassword)
-router.put('/login/restorePasswordCode', updatedPassword)
-router.post('/login', postLogin)
-router.post('/user', saveUser)
+router
+  .post('/', postLogin)
+  .post('/user', saveUser)
+  .get('/restorePasswordCode', restorePassword)
+  .put('/restorePasswordCode', updatedPassword)
 
 export default router

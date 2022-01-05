@@ -52,7 +52,7 @@ const Users = Db.define(
     },
     remember_token: {
       type: DataTypes.STRING,
-    },
+    }
   },
   {
     hooks: {
@@ -75,7 +75,7 @@ Users.prototype.validPassword = async function (password) {
   return await bcrypt.compare(password, this.password)
 }
 Users.sync()
-  .then(() => console.log('Sync Successfull !'))
+  .then(() => console.log('Sync Successfull Users!'))
   .catch((err) => console.log(err))
 
 export default Users
