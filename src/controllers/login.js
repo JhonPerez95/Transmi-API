@@ -5,6 +5,7 @@ import { sendMail } from '../helpers/restorePass'
 import RestorePass from '../models/RestorePass'
 import Users from '../models/Users'
 import config from '../config/config'
+import Parkings from '../models/Parkings'
 
 require('dotenv').config()
 
@@ -28,6 +29,11 @@ export const postLogin = async (req, res) => {
 
     const { id, name, last_name, email, phone, document, active, parkings_id } =
       userData.dataValues
+
+    // Find parking
+    const { dataValues: parkingData } = await Parkings.findByPk(parkings_id)
+    const { name: parkingName } = parkingData
+
     // Create a token
     const { token, expireDate } = createToken(userData.id)
 
@@ -46,14 +52,20 @@ export const postLogin = async (req, res) => {
         phone,
         document,
         active,
-        parkings_id,
+        parkingName,
       },
     })
   } catch (error) {
     console.log(error.message)
-    res
-      .status(500)
-      .json({ success: false, message: 'Please contact the Admin! !' })
+    console.log(error?.parent?.sqlMessage)
+    return res.status(500).json({
+      success: false,
+      message: 'Please contact the Admin! !',
+      error: {
+        message: error.message,
+        sqlMessage: error?.parent?.sqlMessage || 'N/A',
+      },
+    })
   }
 }
 
@@ -82,13 +94,15 @@ export const restorePassword = async (req, res) => {
     })
   } catch (error) {
     console.log(error.message)
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: 'Please contact the Admin! !',
-        error: error.message,
-      })
+    console.log(error?.parent?.sqlMessage)
+    return res.status(500).json({
+      success: false,
+      message: 'Please contact the Admin! !',
+      error: {
+        message: error.message,
+        sqlMessage: error?.parent?.sqlMessage || 'N/A',
+      },
+    })
   }
 }
 
@@ -123,10 +137,14 @@ export const saveUser = async (req, res) => {
     })
   } catch (error) {
     console.log(error.message)
-    res.status(500).json({
+    console.log(error?.parent?.sqlMessage)
+    return res.status(500).json({
       success: false,
       message: 'Please contact the Admin! !',
-      error: error.message,
+      error: {
+        message: error.message,
+        sqlMessage: error?.parent?.sqlMessage || 'N/A',
+      },
     })
   }
 }
@@ -170,10 +188,14 @@ export const updatedPassword = async (req, res) => {
       .json({ success: true, message: 'The password updated successfully ! ' })
   } catch (error) {
     console.log(error.message)
-    res.status(500).json({
+    console.log(error?.parent?.sqlMessage)
+    return res.status(500).json({
       success: false,
       message: 'Please contact the Admin! !',
-      error: error.message,
+      error: {
+        message: error.message,
+        sqlMessage: error?.parent?.sqlMessage || 'N/A',
+      },
     })
   }
 }

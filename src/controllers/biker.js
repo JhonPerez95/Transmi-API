@@ -3,7 +3,7 @@ import Biker from '../models/Biker'
 // POST /biker
 export const saveBiker = async (req, res) => {
   const { body, files } = req
-
+  //TODO: guardar la foto en un servicio Cloud y almacenar el link en el obj
   try {
     const biker = new Biker(body)
     const savedUser = await biker.save()
