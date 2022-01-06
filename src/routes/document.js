@@ -1,9 +1,7 @@
 import { Router } from 'express'
-
+import * as crtTypeDocument from '../controllers/typeDocument'
 const routerDocument = Router()
 
-routerDocument.get('/', (req, res) => {
-  res.status(200).json({ success: true, message: 'Route correct  document! ' })
-})
+routerDocument.get('/', crtTypeDocument.findAllTypeDocuments)
 
 export default routerDocument

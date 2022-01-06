@@ -10,6 +10,6 @@ const app = express()
 app.use('/login', routeLogin)
 app.use('/biker', routeBiker)
 app.use('/type-document', routerDocument)
-app.use('/parking', routerParking)
+app.use('/parkings', routerParking)
 
 module.exports = app
