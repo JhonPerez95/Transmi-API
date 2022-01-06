@@ -52,6 +52,7 @@ export const postLogin = async (req, res) => {
         phone,
         document,
         active,
+        parkings_id,
         parkingName,
       },
     })
