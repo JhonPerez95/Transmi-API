@@ -55,18 +55,11 @@ const Bikers = Db.define('bikers', {
     allowNull: false,
   },
   neighborhoods_id: {
-    type: DataTypes.STRING,
+    type: DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
   },
-  levels_id: {
-    type: DataTypes.ENUM(
-      'Estrato 1',
-      'Estrato 2',
-      'Estrato 3',
-      'Estrato 4',
-      'Estrato 5',
-      'Estrato 6'
-    ),
+  levels: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   code: {
