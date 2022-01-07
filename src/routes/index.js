@@ -8,12 +8,14 @@ import routerGender from './gender'
 import routerJobs from './jobs'
 import routesLevels from './level'
 import routesNeighborhoods from './neighborhood'
+import routerTypeBici from './typeBici'
 
 const app = express()
 
 app.use('/login', routeLogin)
 app.use('/biker', routeBiker)
 app.use('/type-document', routerDocument)
+app.use('/type-bici', routerTypeBici)
 app.use('/parkings', routerParking)
 app.use('/genders', routerGender)
 app.use('/jobs', routerJobs)
