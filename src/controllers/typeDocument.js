@@ -8,11 +8,7 @@ export const findAllTypeDocuments = async (req, res) => {
         .status(404)
         .json({ success: false, message: 'Type Documents not found !' })
 
-    return res.status(200).json({
-      success: true,
-      message: 'Type Documents found successfull !',
-      typeDocuments: dataTypeDocuments,
-    })
+    return res.status(200).json(dataTypeDocuments)
   } catch (error) {
     console.log(error.message)
     return res.status(500).json({

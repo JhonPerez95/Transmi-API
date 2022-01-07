@@ -10,11 +10,7 @@ export const findAllParkings = async (req, res) => {
         .status(404)
         .json({ success: false, message: 'Parkings  not found !' })
 
-    return res.status(200).json({
-      success: true,
-      message: 'Parkings found successfull !',
-      parkings: dataParkings,
-    })
+    return res.status(200).json(dataParkings)
   } catch (error) {
     console.log(error.message)
     return res.status(500).json({
